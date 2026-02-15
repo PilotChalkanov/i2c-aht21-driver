@@ -1,8 +1,8 @@
 /*
+Copyright 2026 Nikolay Chalkanov
 AHT21 Temperature and Humidity Sensor Driver
 Author: Nikolay Chalkanov
 This driver interfaces with the AHT21 sensor over I2C, allowing userspace applications to read temperature and humidity data. The driver registers a misc device for user interaction and handles I2C
-
 
 From the manufacturer's datasheet, the AHT21 sensor operates as follows:
 
@@ -10,7 +10,7 @@ From the manufacturer's datasheet, the AHT21 sensor operates as follows:
 1.1. The MCU initiates communication by sending a start condition followed by the 7-bit I2C device address (0x38)
  and a SDA direction bit x (read R:‘1’, write W: ‘0’).
 1.2. After the falling edge of the 8th SCL clock, the SDA pin (ACK) is pulled low to indicate that
-the sensor data reception is normal. 
+the sensor data reception is normal.
 1.3.  After issuing the initialization command 0xBE and the measurement command 0xAC, the MCU must wait until the
 measurement is completed.
 
@@ -30,8 +30,6 @@ measurement is completed.
 2.5.  Calculate the temperature and humidity values.
     Note: The calibration status check in the first step only needs to be checked at power-on.
     No operation is required during the normal acquisition process.
-
-
 */
 
 
@@ -59,21 +57,21 @@ struct aht21_data {
 };
 
 /*
-Initializes the AHT21 sensor by sending the init CMD as per datsheet 1.1, preparing it for measurement. 
+Initializes the AHT21 sensor by sending the init CMD as per datsheet 1.1, preparing it for measurement.
 */
 static int aht21_init_sensor(struct i2c_client *client)
 {
     u8 init_cmd[3] = {AHT21_CMD_INIT, 0x08, 0x00};
     int ret;
-    
+
     dev_info(&client->dev, "Initializing AHT21 sensor\n");
-    
+
     ret = i2c_master_send(client, init_cmd, 3);
     if (ret < 0) {
         dev_err(&client->dev, "Failed to initialize sensor: %d\n", ret);
         return ret;
     }
-    
+
     msleep(10);  // Wait for initialization
     return 0;
 }
@@ -83,7 +81,7 @@ static int aht21_init_sensor(struct i2c_client *client)
 Driver probe func.
 Check for I2C functionality, allocate memory for device data, register misc device, and set client data.
 */
-static int aht21_probe(struct i2c_client *client, const struct i2c_device_id *id){
+static int aht21_probe(struct i2c_client *client, const struct i2c_device_id *id) {
     PDEBUG("AHT21 sensor probed successfully\n");
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
         PDEBUG("AHT21: I2C functionality not supported\n");
@@ -113,12 +111,12 @@ static int aht21_probe(struct i2c_client *client, const struct i2c_device_id *id
     return 0;
 }
 
-static int aht21_remove(struct i2c_client *client){
+static int aht21_remove(struct i2c_client *client) {
     struct aht21_data *data = i2c_get_clientdata(client);
     if (data) {
         devm_kfree(&client->dev, data);
         misc_deregister(&data->miscdev);
-    }    
+    }
     PDEBUG("AHT21 sensor removed\n");
     return 0;
 }
