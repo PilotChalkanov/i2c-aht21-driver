@@ -4,8 +4,9 @@
  *  Copyright: Oct 23, 2019
  *      Author: Dan Walkes
  */
-#ifndef AHT21_H_
-#define AHT21_H_
+// NOLINT(build/header_guard)
+#ifndef AHT21_AHT21_H_
+#define AHT21_AHT21_H_
 
 #define AHT_DEBUG 1  // Remove comment on this line to enable debug
 
@@ -20,5 +21,5 @@
 #  endif
 #else
 #  define PDEBUG(fmt, args...) /* not debugging: nothing */
+#endif  // AHT21_AHT21_H_
 #endif
-#endif  

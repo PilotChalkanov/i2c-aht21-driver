@@ -1,23 +1,6 @@
-#include <linux/uaccess.h>
-#include <linux/fs.h>
 
-// Empty implementations for file operations
-static int aht21_open(struct inode *inode, struct file *file)
-{
-    return 0;
-}
-
-static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
-{
-    return 0;
-}
-
-static int aht21_release(struct inode *inode, struct file *file)
-{
-    return 0;
-}
+/* Copyright 2026 Nikolay Chalkanov */
 /*
-Copyright 2026 Nikolay Chalkanov
 AHT21 Temperature and Humidity Sensor Driver
 Author: Nikolay Chalkanov
 This driver interfaces with the AHT21 sensor over I2C, allowing userspace applications to read temperature and humidity data. The driver registers a misc device for user interaction and handles I2C
@@ -50,7 +33,6 @@ measurement is completed.
     No operation is required during the normal acquisition process.
 */
 
-
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/of.h>
@@ -74,11 +56,29 @@ struct aht21_data {
     struct miscdevice miscdev;
 };
 
+
+
+/*
+Initial implementation of file operations.
+The open, read, and release functions are currently placeholders
+and need to be implemented to handle user interactions with the device.
+*/
+static int aht21_open(struct inode *inode, struct file *file) {
+    return 0;
+}
+
+static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, loff_t *ppos) {
+    return 0;
+}
+
+static int aht21_release(struct inode *inode, struct file *file) {
+    return 0;
+}
+
 /*
 Initializes the AHT21 sensor by sending the init CMD as per datsheet 1.1, preparing it for measurement.
 */
-static int aht21_init_sensor(struct i2c_client *client)
-{
+static int aht21_init_sensor(struct i2c_client *client) {
     u8 init_cmd[3] = {AHT21_CMD_INIT, 0x08, 0x00};
     int ret;
 
@@ -106,7 +106,6 @@ Driver probe func.
 Check for I2C functionality, allocate memory for device data, register misc device, and set client data.
 */
 static int aht21_probe(struct i2c_client *client, const struct i2c_device_id *id) {
-
     struct aht21_data *aht21;
     PDEBUG("AHT21 sensor probed successfully\n");
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
