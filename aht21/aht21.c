@@ -173,6 +173,7 @@ static int aht21_open(struct inode *inode, struct file *file) {
 
 static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, loff_t *ppos) {
     int temperature, humidity;
+    int ret;
     char output[2];
 
     if (*ppos > 0) {
