@@ -4,8 +4,8 @@
  *  Copyright: Oct 23, 2019
  *      Author: Dan Walkes
  */
-#ifndef LCD1602_LCD1602_H_
-#define LCD1602_LCD1602_H_
+#ifndef AHT21_H_
+#define AHT21_H_
 
 #define AHT_DEBUG 1  // Remove comment on this line to enable debug
 
@@ -21,4 +21,4 @@
 #else
 #  define PDEBUG(fmt, args...) /* not debugging: nothing */
 #endif
-#endif  // LCD1602_LCD1602_H_
+#endif  
