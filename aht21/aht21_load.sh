@@ -13,7 +13,7 @@ echo "Loading $MODULE_NAME module..."
 #remove the module if it is already loaded
 if lsmod | grep "$MODULE_NAME" &> /dev/null ; then
     echo "Module $MODULE_NAME is already loaded. Removing it first..."
-    sudo rmmod $MODULE_NAME
+    rmmod $MODULE_NAME
 fi
 
 #install the module
