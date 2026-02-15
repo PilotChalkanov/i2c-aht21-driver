@@ -1,3 +1,21 @@
+#include <linux/uaccess.h>
+#include <linux/fs.h>
+
+// Empty implementations for file operations
+static int aht21_open(struct inode *inode, struct file *file)
+{
+    return 0;
+}
+
+static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+{
+    return 0;
+}
+
+static int aht21_release(struct inode *inode, struct file *file)
+{
+    return 0;
+}
 /*
 Copyright 2026 Nikolay Chalkanov
 AHT21 Temperature and Humidity Sensor Driver
@@ -76,12 +94,20 @@ static int aht21_init_sensor(struct i2c_client *client)
     return 0;
 }
 
+static const struct file_operations aht21_fops = {
+    .owner = THIS_MODULE,
+    .open = aht21_open,
+    .read = aht21_read,
+    .release = aht21_release,
+};
 
 /*
 Driver probe func.
 Check for I2C functionality, allocate memory for device data, register misc device, and set client data.
 */
 static int aht21_probe(struct i2c_client *client, const struct i2c_device_id *id) {
+
+    struct aht21_data *aht21;
     PDEBUG("AHT21 sensor probed successfully\n");
     if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
         PDEBUG("AHT21: I2C functionality not supported\n");
