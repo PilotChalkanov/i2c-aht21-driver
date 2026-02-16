@@ -174,7 +174,7 @@ static int aht21_open(struct inode *inode, struct file *file) {
 static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, loff_t *ppos) {
     int temperature, humidity;
     int ret;
-    char output[2];
+    int32_t output[2];
 
     if (*ppos > 0) {
         return 0;  // EOF
@@ -189,12 +189,12 @@ static ssize_t aht21_read(struct file *file, char __user *buf, size_t count, lof
     output[0] = temperature;
     output[1] = humidity;
 
-    if (copy_to_user(buf, output, 2)) {
+    if (copy_to_user(buf, output, sizeof(output))) {
         return -EFAULT;
     }
 
-    *ppos += 2;
-    return 2;
+    *ppos += sizeof(output);
+    return sizeof(output);
 }
 
 static int aht21_release(struct inode *inode, struct file *file) {
