@@ -78,6 +78,10 @@ measurement is completed.
 #define AHT21_CMD_RESET 0xBA
 #define AHT21_STATUS_BUSY 0x80
 #define AHT21_STATUS_CAL 0x08
+#define AHT21_RAW_SCALE (1U << 20)
+#define AHT21_HUMIDITY_MULTIPLIER 100
+#define AHT21_TEMPERATURE_MULTIPLIER 200
+#define AHT21_TEMPERATURE_OFFSET 50
 
 
 struct aht21_data {
@@ -110,8 +114,6 @@ static int aht21_read_raw_data(struct i2c_client *client, int *temperature, int 
     int ret, retry;
     u32 humidity_raw, temperature_raw;
     u8 crc;
-
-        // Check calibration status
 
     // Trigger measurement
     ret = i2c_master_send(client, measure_cmd, 3);
@@ -153,14 +155,16 @@ static int aht21_read_raw_data(struct i2c_client *client, int *temperature, int 
     // remove last 4 bits of data[3] by shifting to the right, since they are for temperature
     humidity_raw = (((u32)data[1] << 16) | ((u32)data[2] << 8) | (u32)data[3]) >> 4;
 
+
+    
     // get temperature bits from data[3] and shift all to the left
     // data[4] - next 8 bit,
     // and data[5] - last 8 bits
     temperature_raw = (((u32)(data[3] & 0x0F) << 16) | ((u32)data[4] << 8) | (u32)data[5]);
 
     // convert raw values to actual temperature and humidity
-    *humidity = (humidity_raw/(1<<20))*100;  // convert to percentage
-    *temperature = ((temperature_raw/ (1<<20)) * 200) - 50;  // convert to Celsius
+    *humidity = (humidity_raw * AHT21_HUMIDITY_MULTIPLIER) / AHT21_RAW_SCALE;  // convert to percentage
+    *temperature = ((temperature_raw * AHT21_TEMPERATURE_MULTIPLIER) / AHT21_RAW_SCALE) - AHT21_TEMPERATURE_OFFSET;  // convert to Celsius
     PDEBUG("Raw humidity: %u, Raw temperature: %u\n", humidity_raw, temperature_raw);
     PDEBUG("Calculated humidity: %d%%, Calculated temperature: %dC\n", *humidity, *temperature);
     return 0;
