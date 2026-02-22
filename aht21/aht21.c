@@ -156,7 +156,7 @@ static int aht21_read_raw_data(struct i2c_client *client, int *temperature, int 
     humidity_raw = (((u32)data[1] << 16) | ((u32)data[2] << 8) | (u32)data[3]) >> 4;
 
 
-    
+
     // get temperature bits from data[3] and shift all to the left
     // data[4] - next 8 bit,
     // and data[5] - last 8 bits
